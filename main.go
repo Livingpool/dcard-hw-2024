@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"go-project/api"
 	"log"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/Livingpool/api"
+	"github.com/Livingpool/router"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -19,14 +20,15 @@ var (
 )
 
 func main() {
-	router := gin.Default()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
+	// connect to mongodb
 	mongoClient, err := mongo.Connect(
 		ctx,
 		options.Client().ApplyURI("mongodb://tim:secret@localhost:27017/"),
 	)
 
+	// close connection to mongodb
 	defer func() {
 		cancel()
 		if err := mongoClient.Disconnect(ctx); err != nil {
@@ -46,16 +48,9 @@ func main() {
 	}
 	fmt.Println("ping mongodb success")
 
-	handler := api.Handler(mongoClient)
-	router.POST("/api/v1/ad", func(c *gin.Context) {
-		handler.CreateAd(c, dbName, collName)
-	})
-	router.GET("/api/v1/ad", func(c *gin.Context) {
-		handler.SearchAd(c, dbName, collName)
-	})
-	router.GET("/api/v1/allads", func(c *gin.Context) {
-		handler.ReturnAllAds(c, dbName, collName)
-	})
+	// set up routes
+	handler := api.Handler(mongoClient.Database(dbName))
+	r := router.Initialize(handler, collName)
 
-	router.Run("localhost:8080")
+	r.Run("localhost:8080")
 }

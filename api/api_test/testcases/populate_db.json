@@ -1,0 +1,93 @@
+[
+    {
+        "title": "AD 1",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-05-01T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 10,
+            "ageEnd": 30,
+            "country": [
+                "TW",
+                "JP"
+            ],
+            "platform": [
+                "android",
+                "ios",
+                "web"
+            ]
+        }
+    },
+    {
+        "title": "AD 2",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-30T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 50,
+            "ageEnd": 60,
+            "gender": ["M"],
+            "country": [
+                "TW",
+                "JP"
+            ],
+            "platform": [
+                "android",
+                "ios"
+            ]
+        }
+    },
+    {
+        "title": "AD 3",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-29T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 10,
+            "ageEnd": 30,
+            "platform": [
+                "android",
+                "ios",
+                "web"
+            ]
+        }
+    },
+    {
+        "title": "AD 4",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-28T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 10,
+            "ageEnd": 30,
+            "country": [
+                "TW",
+                "JP",
+                "US"
+            ]
+        }
+    },
+    {
+        "title": "AD 5 no condition",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-27T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 1,
+            "ageEnd": 100
+        }
+    },
+    {
+        "title": "AD 6 no condition",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-26T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 1,
+            "ageEnd": 100
+        }
+    },
+    {
+        "title": "AD 7 no condition",
+        "startAt": "2024-03-01T03:00:00.000Z",
+        "endAt": "2024-04-25T16:00:00.000Z",
+        "conditions": {
+            "ageStart": 1,
+            "ageEnd": 100
+        }
+    }
+]

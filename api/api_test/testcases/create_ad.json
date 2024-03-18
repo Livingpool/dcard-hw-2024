@@ -1,0 +1,112 @@
+[
+    {
+        "name": "success with missing optional field",
+        "request": {
+            "title": "AD 1",
+            "startAt": "2023-03-01T03:00:00.000Z",
+            "endAt": "2023-03-31T16:00:00.000Z",
+            "conditions": {
+                "ageStart": 10,
+                "ageEnd": 30,
+                "country": [
+                    "Tw",
+                    "JP"
+                ],
+                "platform": [
+                    "android",
+                    "ios",
+                    "web"
+                ]
+            }
+        },
+        "statusCode": 201
+    },
+    {
+        "name": "success with all fields",
+        "request": {
+            "title": "AD 2",
+            "startAt": "2023-03-01T03:00:00.000Z",
+            "endAt": "2023-03-31T16:00:00.000Z",
+            "conditions": {
+                "ageStart": 10,
+                "ageEnd": 30,
+                "gender": ["M"],
+                "country": [
+                    "Tw",
+                    "JP"
+                ],
+                "platform": [
+                    "android",
+                    "ios",
+                    "web"
+                ]
+            }
+        },
+        "statusCode": 201
+    },
+    {
+        "name": "failure with invalid platform",
+        "request": {
+            "title": "AD 3",
+            "startAt": "2023-03-01T03:00:00.000Z",
+            "endAt": "2023-03-31T16:00:00.000Z",
+            "conditions": {
+                "ageStart": 10,
+                "ageEnd": 30,
+                "country": [
+                    "Tw",
+                    "JP"
+                ],
+                "platform": [
+                    "android",
+                    "ios",
+                    "error"
+                ]
+            }
+        },
+        "statusCode": 400
+    },
+    {
+        "name": "failure with invalid age range",
+        "request": {
+            "title": "AD 4",
+            "startAt": "2023-03-01T03:00:00.000Z",
+            "endAt": "2023-03-31T16:00:00.000Z",
+            "conditions": {
+                "ageStart": 40,
+                "ageEnd": 30,
+                "country": [
+                    "Tw",
+                    "JP"
+                ],
+                "platform": [
+                    "android",
+                    "ios",
+                    "web"
+                ]
+            }
+        },
+        "statusCode": 400
+    },
+    {
+        "name": "failure with missing required field",
+        "request": {
+            "title": "AD 5",
+            "startAt": "2023-03-01T03:00:00.000Z",
+            "conditions": {
+                "ageStart": 10,
+                "ageEnd": 30,
+                "country": [
+                    "Tw",
+                    "JP"
+                ],
+                "platform": [
+                    "android",
+                    "ios",
+                    "web"
+                ]
+            }
+        },
+        "statusCode": 400
+    }
+]

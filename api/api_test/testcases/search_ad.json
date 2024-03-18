@@ -1,0 +1,105 @@
+[
+    {
+        "name": "search all results",
+        "request": {
+            "limit": 100
+        },
+        "statusCode": 200,
+        "response": {
+            "items": [
+                {
+                    "title": "AD 7 no condition",
+                    "endAt": "2024-04-25T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 6 no condition",
+                    "endAt": "2024-04-26T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 5 no condition",
+                    "endAt": "2024-04-27T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 4",
+                    "endAt": "2024-04-28T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 3",
+                    "endAt": "2024-04-29T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 2",
+                    "endAt": "2024-04-30T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 1",
+                    "endAt": "2024-05-01T16:00:00.000Z"
+                }
+            ]
+        }
+    },
+    {
+        "name": "search with age",
+        "request": {
+            "limit": 100,
+            "age": 55
+        },
+        "statusCode": 200,
+        "response": {
+            "items": [
+                {
+                    "title": "AD 7 no condition",
+                    "endAt": "2024-04-25T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 6 no condition",
+                    "endAt": "2024-04-26T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 5 no condition",
+                    "endAt": "2024-04-27T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 2",
+                    "endAt": "2024-04-30T16:00:00.000Z"
+                }
+            ]
+        }
+    },
+    {
+        "name": "search with platform",
+        "request": {
+            "limit": 100,
+            "platform": "web"
+        },
+        "statusCode": 200,
+        "response": {
+            "items": [
+                {
+                    "title": "AD 7 no condition",
+                    "endAt": "2024-04-25T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 6 no condition",
+                    "endAt": "2024-04-26T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 5 no condition",
+                    "endAt": "2024-04-27T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 4",
+                    "endAt": "2024-04-28T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 3",
+                    "endAt": "2024-04-29T16:00:00.000Z"
+                },
+                {
+                    "title": "AD 1",
+                    "endAt": "2024-05-01T16:00:00.000Z"
+                }
+            ]
+        }
+    }
+]
