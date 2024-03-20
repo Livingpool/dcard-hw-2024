@@ -10,6 +10,7 @@ import (
 	"github.com/Livingpool/api"
 	"github.com/Livingpool/model"
 	"github.com/Livingpool/router"
+	"github.com/gin-gonic/gin"
 
 	"github.com/steinfletcher/apitest"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,6 +18,7 @@ import (
 
 var (
 	testDBInstance *mongo.Database
+	r              *gin.Engine
 )
 
 type CreateAdTestCase struct {
@@ -42,7 +44,11 @@ func TestMain(m *testing.M) {
 		log.Fatal("Failed to set up test database")
 	}
 	testDBInstance = testDB.DbInstance
-	populateDBFromJSON(testDBInstance, "testcases/populate_db.json")
+
+	// Set up the router
+	h := api.Handler(testDBInstance)
+	r = router.Initialize(h, "advertisements")
+
 	exitCode := m.Run()
 	log.Println("teardown is running")
 	testDB.TearDown()
@@ -51,10 +57,6 @@ func TestMain(m *testing.M) {
 
 // E2E test for CreateAd
 func TestCreateAd(t *testing.T) {
-	// Set up the router
-	h := api.Handler(testDBInstance)
-	r := router.Initialize(h, "advertisements")
-
 	// Read the test cases from the JSON file
 	file, _ := os.Open("testcases/create_ad.json")
 	defer file.Close()
@@ -87,10 +89,6 @@ func TestCreateAd(t *testing.T) {
 
 // E2E test for SearchAd
 func TestSearchAd(t *testing.T) {
-	// Set up the router
-	h := api.Handler(testDBInstance)
-	r := router.Initialize(h, "advertisements")
-
 	// Read the test cases from the JSON file
 	file, _ := os.Open("testcases/search_ad.json")
 	defer file.Close()
@@ -99,6 +97,9 @@ func TestSearchAd(t *testing.T) {
 	if err := decoder.Decode(&testCases); err != nil {
 		t.Fatal(err)
 	}
+
+	// Populate the database with test data
+	populateDBFromJSON(testDBInstance, "testcases/populate_db.json")
 
 	// Run a subtest for each test case
 	for _, tc := range testCases {
