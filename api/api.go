@@ -6,77 +6,24 @@ import (
 	"net/http"
 	"time"
 
-	model "github.com/Livingpool/model"
+	"github.com/Livingpool/model"
 
-	"github.com/biter777/countries"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type HandlerStruct struct {
-	DB       *mongo.Database
-	Validate *validator.Validate
-}
-
-// Validation functions
-func isCountryCode(fl validator.FieldLevel) bool {
-	country := fl.Field().String()
-	if country == "" {
-		return true
-	}
-	countryCode := countries.ByName(country)
-	return countryCode != countries.Unknown
-}
-
-func validateGender(fl validator.FieldLevel) bool {
-	gender := fl.Field().String()
-	switch model.Gender(gender) {
-	case model.Male, model.Female, "":
-		return true
-	default:
-		return false
-	}
-}
-
-func validatePlatform(fl validator.FieldLevel) bool {
-	platform := fl.Field().String()
-	switch model.Platform(platform) {
-	case model.Android, model.IOS, model.Web, "":
-		return true
-	default:
-		return false
-	}
-}
-
-func validateAgeRange(fl validator.FieldLevel) bool {
-	ageStart := fl.Parent().FieldByName("AgeStart").Int()
-	ageEnd := fl.Parent().FieldByName("AgeEnd").Int()
-	return ageStart == 0 || ageEnd == 0 || ageStart <= ageEnd
-}
-
-func Handler(db *mongo.Database) *HandlerStruct {
-	validate := validator.New()
-	validate.RegisterValidation("countrycode", isCountryCode)
-	validate.RegisterValidation("gender", validateGender)
-	validate.RegisterValidation("platform", validatePlatform)
-	validate.RegisterValidation("ageRange", validateAgeRange)
-
-	return &HandlerStruct{
-		DB:       db,
-		Validate: validate,
-	}
+type ApiGroup struct {
+	Collection *mongo.Collection
 }
 
 // CreateIndex for endAt field (ascending order) to optimize the search
-func (h *HandlerStruct) CreateIndex(coll string) error {
-	collection := h.DB.Collection(coll)
+func (r *ApiGroup) CreateIndex() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := collection.Indexes().CreateOne(
+	_, err := r.Collection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
 			Keys: bson.M{
@@ -92,7 +39,7 @@ func (h *HandlerStruct) CreateIndex(coll string) error {
 }
 
 // CreateAd 產生廣告
-func (h *HandlerStruct) CreateAd(c *gin.Context, coll string) {
+func (r *ApiGroup) CreateAd(c *gin.Context) {
 	var ad model.CreateAdRequest
 	if err := c.ShouldBindJSON(&ad); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ShouldBindJSON error": err.Error()})
@@ -100,7 +47,7 @@ func (h *HandlerStruct) CreateAd(c *gin.Context, coll string) {
 	}
 
 	// Validate the input
-	if err := h.Validate.Struct(ad); err != nil {
+	if err := model.Validator().Struct(ad); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"Validation error": err.Error()})
 		return
 	}
@@ -138,10 +85,9 @@ func (h *HandlerStruct) CreateAd(c *gin.Context, coll string) {
 	adInMongoDB.Conditions.Platform = ad.Conditions.Platform
 
 	// Insert the document with converted startAt and endAt fields
-	collection := h.DB.Collection(coll)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err = collection.InsertOne(ctx, adInMongoDB)
+	_, err = r.Collection.InsertOne(ctx, adInMongoDB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -151,7 +97,7 @@ func (h *HandlerStruct) CreateAd(c *gin.Context, coll string) {
 }
 
 // SearchAd 列出符合可用和匹配目標條件的廣告
-func (h *HandlerStruct) SearchAd(c *gin.Context, coll string) {
+func (r *ApiGroup) SearchAd(c *gin.Context) {
 	var search model.SearchAdRequest
 	if err := c.ShouldBindQuery(&search); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ShouldBindQuery error": err.Error()})
@@ -159,7 +105,7 @@ func (h *HandlerStruct) SearchAd(c *gin.Context, coll string) {
 	}
 
 	// Validate the input
-	if err := h.Validate.Struct(search); err != nil {
+	if err := model.Validator().Struct(search); err != nil {
 		fmt.Printf("SearchAdRequest: %+v\n", search)
 		c.JSON(http.StatusBadRequest, gin.H{"Validation error": err.Error()})
 		return
@@ -229,9 +175,8 @@ func (h *HandlerStruct) SearchAd(c *gin.Context, coll string) {
 		opts.SetLimit(5) // default limit
 	}
 
-	// Use h.Client to interact with the database
-	collection := h.DB.Collection(coll)
-	cursor, err := collection.Find(context.Background(), filter, opts.SetProjection(projection))
+	// Find matching documents
+	cursor, err := r.Collection.Find(context.Background(), filter, opts.SetProjection(projection))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -248,10 +193,7 @@ func (h *HandlerStruct) SearchAd(c *gin.Context, coll string) {
 }
 
 // [Testing function] ReturnAllAds 回傳所有廣告
-func (h *HandlerStruct) ReturnAllAds(c *gin.Context, coll string) {
-	// Use h.Client to interact with the database
-	collection := h.DB.Collection(coll)
-
+func (r *ApiGroup) ReturnAllAds(c *gin.Context) {
 	// Create an empty filter to match all documents
 	filter := bson.M{}
 
@@ -260,7 +202,7 @@ func (h *HandlerStruct) ReturnAllAds(c *gin.Context, coll string) {
 		SetSort(bson.D{{Key: "endAt", Value: 1}})
 
 	// Find all documents
-	cursor, err := collection.Find(context.Background(), filter, opts)
+	cursor, err := r.Collection.Find(context.Background(), filter, opts)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

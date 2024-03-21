@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Livingpool/api"
+	"github.com/Livingpool/constants"
 	"github.com/Livingpool/model"
 	"github.com/Livingpool/router"
 	"github.com/gin-gonic/gin"
@@ -46,8 +46,7 @@ func TestMain(m *testing.M) {
 	testDBInstance = testDB.DbInstance
 
 	// Set up the router
-	h := api.Handler(testDBInstance)
-	r = router.Initialize(h, "advertisements")
+	r = router.Initialize(testDBInstance.Collection(constants.COLLECTION_NAME))
 
 	exitCode := m.Run()
 	log.Println("teardown is running")

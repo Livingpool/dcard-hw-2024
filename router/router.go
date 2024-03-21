@@ -3,24 +3,20 @@ package router
 import (
 	"github.com/Livingpool/api"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Initialize(handler *api.HandlerStruct, collName string) *gin.Engine {
+func Initialize(mongoColl *mongo.Collection) *gin.Engine {
 	router := gin.Default()
 
-	err := handler.CreateIndex(collName)
-	if err != nil {
-		panic(err)
+	apiGroup := &api.ApiGroup{
+		Collection: mongoColl,
 	}
 
-	router.POST("/api/v1/ad", func(c *gin.Context) {
-		handler.CreateAd(c, collName)
-	})
-	router.GET("/api/v1/ad", func(c *gin.Context) {
-		handler.SearchAd(c, collName)
-	})
-	router.GET("/api/v1/allads", func(c *gin.Context) {
-		handler.ReturnAllAds(c, collName)
-	})
+	// Set up routes
+	router.POST("/api/v1/ad", apiGroup.CreateAd)
+	router.GET("/api/v1/ad", apiGroup.SearchAd)
+	router.GET("/api/v1/allads", apiGroup.ReturnAllAds)
+
 	return router
 }

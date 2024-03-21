@@ -50,5 +50,5 @@ file="entries.json"
 while IFS= read -r BODY; do
   curl -X "${METHOD}" "${TARGET_URL}" \
     "${HEADERS[@]/#/-H}" \
-    -d "$BODY" > dev/null
+    -d "$BODY" > /dev/null 2>&1
 done < $file

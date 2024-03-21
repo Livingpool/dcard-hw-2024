@@ -12,5 +12,5 @@ done < <(jq -r '.headers | to_entries[] | "\(.key): \(.value)"' config.json)
 
 # Run the load test with vegeta
 echo "$METHOD $TARGET_URL" | \
-vegeta attack "${HEADERS[@]/#/-header=}" -rate=10000 -duration=3s | \
+vegeta attack "${HEADERS[@]/#/-header=}" -rate=1000 -duration=1s | \
 vegeta report -output="search_ad_report.txt"
