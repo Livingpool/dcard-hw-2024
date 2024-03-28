@@ -2,11 +2,15 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/Livingpool/constants"
 	"github.com/Livingpool/model"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,22 +19,38 @@ import (
 )
 
 type ApiGroup struct {
-	Collection *mongo.Collection
+	Collection  *mongo.Collection
+	RedisClient *redis.Client
 }
 
-// CreateIndex for endAt field (ascending order) to optimize the search
-func (r *ApiGroup) CreateIndex() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+// SetAdInRedis 將廣告cache在 Redis 中
+func (r *ApiGroup) SetAdInRedis(ctx context.Context, searchAdRequest model.SearchAdRequest, adInMongoDB []model.SearchAdResponse) error {
+	now := time.Now()
+	if adInMongoDB[0].EndAt.Before(now) {
+		return nil
+	}
 
-	_, err := r.Collection.Indexes().CreateOne(
-		ctx,
-		mongo.IndexModel{
-			Keys: bson.M{
-				"endAt": 1, // 1 for ascending order, -1 for descending order
-			},
-		},
-	)
+	adString, err := json.Marshal(adInMongoDB)
+	if err != nil {
+		return err
+	}
+
+	offset := ""
+	limit := ""
+	age := ""
+	if searchAdRequest.Offset != 0 {
+		offset = strconv.Itoa(searchAdRequest.Offset)
+	}
+	if searchAdRequest.Limit != 0 {
+		limit = strconv.Itoa(searchAdRequest.Limit)
+	}
+	if searchAdRequest.Age != 0 {
+		age = strconv.Itoa(searchAdRequest.Age)
+	}
+
+	cacheKey := fmt.Sprintf(constants.CacheKeyFormat, offset, limit, age, searchAdRequest.Gender, searchAdRequest.Country, searchAdRequest.Platform)
+
+	_, err = r.RedisClient.Set(ctx, cacheKey, string(adString), now.Sub(adInMongoDB[0].EndAt)).Result()
 	if err != nil {
 		return err
 	}
@@ -84,7 +104,7 @@ func (r *ApiGroup) CreateAd(c *gin.Context) {
 	adInMongoDB.Conditions.Country = ad.Conditions.Country
 	adInMongoDB.Conditions.Platform = ad.Conditions.Platform
 
-	// Insert the document with converted startAt and endAt fields
+	// Insert the document in mongodb with converted startAt and endAt fields
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	_, err = r.Collection.InsertOne(ctx, adInMongoDB)
@@ -178,14 +198,20 @@ func (r *ApiGroup) SearchAd(c *gin.Context) {
 	// Find matching documents
 	cursor, err := r.Collection.Find(context.Background(), filter, opts.SetProjection(projection))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Mongo Collection.Find error": err.Error()})
 		return
 	}
 
 	// Iterate through the cursor and decode each document
 	var ads []model.SearchAdResponse
-	if err = cursor.All(context.Background(), &ads); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err = cursor.All(c, &ads); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Mongo cursor.All error": err.Error()})
+		return
+	}
+
+	// Cache the ads in redis
+	if err = r.SetAdInRedis(c, search, ads); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Caching error": err.Error()})
 		return
 	}
 

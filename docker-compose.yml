@@ -27,6 +27,15 @@ services:
       - db
     networks:
       - "api.network"
+  
+  redis:
+    image: redis
+    container_name: test-redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks: 
+      - "api.network"
 
   # api is the container name for our Go API
   api:
@@ -40,10 +49,11 @@ services:
       # Wait for the db to start before starting the api
       depends_on: 
           - db
+          - redis
       # Connects the API to a common api.network bridge
       networks: 
           - "api.network"
-      # Starts up 5 replicas of the same image
+      # Starts up replicas of the same image
       deploy:
           replicas: 5
 

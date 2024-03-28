@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 	testDBInstance = testDB.DbInstance
 
 	// Set up the router
-	r = router.Initialize(testDBInstance.Collection(constants.COLLECTION_NAME))
+	r = router.Initialize(testDBInstance.Collection(constants.COLLECTION_NAME), testDB.RedisClient)
 
 	exitCode := m.Run()
 	log.Println("teardown is running")
