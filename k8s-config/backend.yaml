@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: default
+data:
+  REDIS_IP: "10.34.138.96"
+  MONGO_IP: "10.34.134.204"
+  MONGO_PORT: "27017"
+  REDIS_PORT: "6379"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dcard-backend
+  labels:
+    deployment: dcard-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      pod: dcard-backend
+  template:
+    metadata:
+      labels:
+        name: dcard-backend
+        pod: dcard-backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - backend
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: dcard-backend
+        image: asia-east1-docker.pkg.dev/dcard-hw-2024/dcard-repo/dcard-api:v1
+        imagePullPolicy: Always
+        env:
+          - name: REDIS_IP
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: REDIS_IP
+          - name: MONGO_IP
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: MONGO_IP
+
+          - name: MONGO_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: MONGO_PORT
+          - name: REDIS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: REDIS_PORT
+
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_USERNAME
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_PASSWORD
+        
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+
+        resources:
+          requests:
+            cpu: "0.5"
+            memory: "100Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dcard-backend
+spec:
+  type: ClusterIP
+  selector:
+    pod: dcard-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

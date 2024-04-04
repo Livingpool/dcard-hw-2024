@@ -1,0 +1,12 @@
+resourceLimits:
+  - resourceType: 'cpu'
+    maximum: 12
+  - resourceType: 'memory'
+    maximum: 64
+management:
+  autoRepair: true
+  autoUpgrade: true
+shieldedInstanceConfig:
+  enableSecureBoot: true
+  enableIntegrityMonitoring: true
+diskSizeGb: 100

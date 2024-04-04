@@ -19,6 +19,7 @@ func Initialize(mongoColl *mongo.Collection, redisClient *redis.Client) *gin.Eng
 	router.Use(gin.Recovery())
 
 	// Set up routes
+	router.GET("/", api.Ping)
 	router.POST("/api/v1/ad", apiGroup.CreateAd)
 	router.GET("/api/v1/ad", middleware.CacheByRequestQuery(redisClient), apiGroup.SearchAd)
 	router.GET("/api/v1/allads", apiGroup.ReturnAllAds)

@@ -40,6 +40,11 @@ func CacheByRequestQuery(redisClient *redis.Client) gin.HandlerFunc {
 
 		// Unmarshal the content from cache
 		var ads []model.SearchAdResponse
+		if content == "" {
+			c.JSON(http.StatusOK, gin.H{"items": ads})
+			c.Abort()
+			return
+		}
 		if err := json.Unmarshal([]byte(content), &ads); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"Unmarshal error": err.Error()})
 			c.Abort()

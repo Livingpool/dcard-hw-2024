@@ -23,18 +23,12 @@ type ApiGroup struct {
 	RedisClient *redis.Client
 }
 
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
 // SetAdInRedis 將廣告cache在 Redis 中
 func (r *ApiGroup) SetAdInRedis(ctx context.Context, searchAdRequest model.SearchAdRequest, adInMongoDB []model.SearchAdResponse) error {
-	now := time.Now()
-	if adInMongoDB[0].EndAt.Before(now) {
-		return nil
-	}
-
-	adString, err := json.Marshal(adInMongoDB)
-	if err != nil {
-		return err
-	}
-
 	offset := ""
 	limit := ""
 	age := ""
@@ -49,6 +43,24 @@ func (r *ApiGroup) SetAdInRedis(ctx context.Context, searchAdRequest model.Searc
 	}
 
 	cacheKey := fmt.Sprintf(constants.CacheKeyFormat, offset, limit, age, searchAdRequest.Gender, searchAdRequest.Country, searchAdRequest.Platform)
+
+	if len(adInMongoDB) == 0 {
+		_, err := r.RedisClient.Set(ctx, cacheKey, "", 10*time.Second).Result()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	now := time.Now()
+	if adInMongoDB[0].EndAt.Before(now) {
+		return nil
+	}
+
+	adString, err := json.Marshal(adInMongoDB)
+	if err != nil {
+		return err
+	}
 
 	_, err = r.RedisClient.Set(ctx, cacheKey, string(adString), now.Sub(adInMongoDB[0].EndAt)).Result()
 	if err != nil {

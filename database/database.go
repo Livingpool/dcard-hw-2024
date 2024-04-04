@@ -43,10 +43,19 @@ func (db *DB) Connect() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// Load environment variables
+	if err := constants.FetchEnvVariables(); err != nil {
+		panic(err)
+	}
+
+	mongoUsername := constants.MongoUserName
+	mongoPassword := constants.MongoPassword
+
 	// Connect to mongodb
+	uri := "mongodb://" + mongoUsername + ":" + mongoPassword + "@" + constants.MONGO_IP + ":" + constants.MONGO_PORT + "/"
 	mongoClient, err := mongo.Connect(
 		ctx,
-		options.Client().ApplyURI("mongodb://admin:pass@db:27017/"),
+		options.Client().ApplyURI(uri),
 	)
 	if err != nil {
 		log.Fatalf("mongodb connection error :%v", err)
@@ -64,7 +73,7 @@ func (db *DB) Connect() {
 
 	// Connect to redis
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     constants.REDIS_IP + ":" + constants.REDIS_PORT,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

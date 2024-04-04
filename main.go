@@ -13,5 +13,5 @@ func main() {
 
 	// Set up router
 	r := router.Initialize(db.GetCollection(constants.DATABASE_NAME, constants.COLLECTION_NAME), db.RedisClient)
-	r.Run(":5000")
+	r.Run(":8080")
 }

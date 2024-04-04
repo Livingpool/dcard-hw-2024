@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dcard-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: dcard-backend-ip # Assigns a static IP to the Ingress (created via CLI)
+    cloud.google.com/neg: '{"ingress": true}' # Creates a NEG after an Ingress is created
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api/v1
+        pathType: Prefix
+        backend:
+          service:
+            name: dcard-backend
+            port: 
+              number: 80 # Should match the port used by the Service

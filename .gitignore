@@ -1,3 +1,5 @@
 .DS_Store
 .vscode/*
 *.txt
+.env
+load_testing/vegeta/create_ad/entries.json
