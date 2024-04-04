@@ -1,5 +1,5 @@
 # Overview 
-This is the 2024 Backend Intern Assignment for Dcard.\
+This is the 2024 Backend Intern Assignment for Dcard🔥.\
 🔗[Assignment Document Link](https://drive.google.com/file/d/1dnDiBDen7FrzOAJdKZMDJg479IC77_zT/view)
 
 ### Requirements 
@@ -15,14 +15,13 @@ This is the 2024 Backend Intern Assignment for Dcard.\
 - Golang Gin-Gonic framework
 - Database: MongoDB
 - Cache: Redis
-- Load balancing: Nginx
   
 ### Implementation
 - Choosing Go Gin
   - Gin is a lightweight, easy-to-use web framework and I am familiar with it. But starting from go 1.22,
     advanced routing is provided in the standard net/http package, so I may try that for my next project.
 - Handling high load for Public API
-  - This is the main challenge.
+  - This is the main challenge. To handle such high load, usually 
 - Cache strategy
   - There are 4 main cache strategies: cache-aside, write-through, write-behind, and read-through. For our
     advertising application, I think there are 2 options:
@@ -37,11 +36,11 @@ This is the 2024 Backend Intern Assignment for Dcard.\
 - Unit tests
 
 ### Benchmarks
-I used Vegeta as the load testing tool. The testing scripts are in load_testing/vegeta/create_ad and loadtesting/vegeta/search_ad
+I used Vegeta as the load testing tool. The testing scripts are in load_testing/vegeta/create_ad and loadtesting/vegeta/search_ad.
+Machine: Mac Air M1. OS: macOS Sonoma 14.4.1. Memory: 8GB. You may need to set a high value of allowed file descriptors on macOS/Linux.
 
-
-### Running the project
-- Start docker daemon, run the following command, and the endpoints can be accessed at `localhost:80`
+### Running the project locally
+- Start docker daemon, run the following command, and the endpoints can be accessed at `localhost:8080`
 ```
 docker-compose up --build
 ```
@@ -59,4 +58,8 @@ bash run.sh
 cd load_testing/vegeta/search_ad
 bash run.sh
 ```
+### Running the project on GKE
+
+### Resources I used
+
 ### Future work
