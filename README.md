@@ -41,7 +41,7 @@ Machine: Mac Air M1. OS: macOS Sonoma 14.4.1. Memory: 8GB. You may need to set a
 
 ### Running the project locally
 - Start docker daemon, run the following command, and the endpoints can be accessed at `localhost:8080`
-```
+```bash
 docker-compose up --build
 ```
 - Run unit tests
@@ -58,6 +58,7 @@ bash run.sh
 cd load_testing/vegeta/search_ad
 bash run.sh
 ```
+
 ### Running the project on GKE
 
 ### Resources I used
