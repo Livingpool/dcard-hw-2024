@@ -13,6 +13,7 @@ env:
   GKE_ZONE: asia-east1-c
   REPOSITORY: dcard-repo
   IMAGE: dcard-api
+  DEPLOYMENT_NAME: dcard-api-deployment
 
 jobs:
 
