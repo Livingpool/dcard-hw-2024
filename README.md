@@ -1,5 +1,5 @@
 # Overview 
-![Build, Test, Deploy](https://github.com/Livingpool/dcard-hw-2024/.github-actions/workflows/build-test-deploy.yaml/badge.svg)
+[![Docker Build, Unit Test, and Deploy to GKE](https://github.com/Livingpool/dcard-hw-2024/actions/workflows/build-test-deploy.yaml/badge.svg)](https://github.com/Livingpool/dcard-hw-2024/actions/workflows/build-test-deploy.yaml) \
 This is the 2024 Backend Intern Assignment for Dcard🔥.\
 🔗[Assignment Document Link](https://drive.google.com/file/d/1dnDiBDen7FrzOAJdKZMDJg479IC77_zT/view)
 
@@ -18,12 +18,12 @@ This is the 2024 Backend Intern Assignment for Dcard🔥.\
 - Cache: Redis
   
 ### Implementation
-- Choosing Go Gin
+- #### Choosing Go Gin
   - Gin is a lightweight, easy-to-use web framework and I am familiar with it. But starting from go 1.22,
     advanced routing is provided in the standard net/http package, so I may try that for my next project.
-- Handling high load for Public API
+- #### Handling high load for Public API
   - This is the main challenge. Handling high load ususally involves caching and/or load balancing.
-- Cache strategy
+- #### Cache strategy
   - There are 4 main cache strategies: cache-aside, write-through, write-behind, and read-through. For our
     advertising application, I think there are 2 options as follows. I chose Cache-aside for implementation.
     - Write-through/write-behind: Pre-populate cache with valid ads when Admin API is called.
@@ -32,15 +32,16 @@ This is the 2024 Backend Intern Assignment for Dcard🔥.\
     - Cache-aside: Set [Key:url params, Value:search result] as cache when Public API is called
       - Pros: Easier to implement.
       - Cons: Less resilient to different queries.
-- Deployment on GKE
-  - I used 3 nodes (machine: e2-medium), each containing a Go server, a MongoDB, and a Redis instance. \
-    1 node (machine: e2-standard-2) for an NFS server and client to facilitate ReadWriteMany operation for the 3 MongoDB instances. \
-    Ingress with a static IP to serve as a load balancer. \
-    Note: due to resource limitations, this server might not be able to handle high load.
-- Unit tests
+- #### Deployment on GKE
+  - I used a 3-node distributed system (machine: e2-medium), each containing a Go server, a MongoDB, and a Redis instance. 
+  - 1 node (machine: e2-standard-2) for an NFS server and client to facilitate ReadWriteMany operation for the 3 MongoDB instances. 
+  - Ingress with a static IP to serve as a load balancer. 
+  - Note: due to resource limitations, this server might not be able to handle high load.
+- #### Unit tests
   - I used [Testcontainers](https://testcontainers.com) to set up MongoDB and Redis.
     The testcases are in api/api_test/testcases.
     Test functions TestCreateAd and TestSearchAd use the created db clients to test if the APIs give correct responses w.r.t. the testcases.
+  - Implemented CI/CD workflow and semantic versioning using GitHub Actions.
 
 ### Benchmarks
 I used Vegeta as the load testing tool. The testing scripts are in load_testing/vegeta/create_ad and loadtesting/vegeta/search_ad.
