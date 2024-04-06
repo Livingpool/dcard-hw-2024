@@ -1,4 +1,5 @@
 # Overview 
+![Build, Test, Deploy](https://github.com/Livingpool/dcard-hw-2024/.github-actions/workflows/build-test-deploy.yaml/badge.svg)
 This is the 2024 Backend Intern Assignment for Dcard🔥.\
 🔗[Assignment Document Link](https://drive.google.com/file/d/1dnDiBDen7FrzOAJdKZMDJg479IC77_zT/view)
 
