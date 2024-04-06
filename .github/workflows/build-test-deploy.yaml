@@ -92,3 +92,34 @@ jobs:
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$DEPLOYMENT_NAME
           kubectl get services -o wide
+
+  test-next-release:
+    needs: setup-build-deploy
+    name: Test Next Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for github-action-get-previous-tag
+
+      - name: Get previous tag
+        id: previoustag
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get next minor version
+        id: semver
+        uses: 'WyriHaximus/github-action-next-semvers@v1'
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+
+      - name: Create release
+        id: create_release_id
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.semver.outputs.v_patch }}
+          release_name: Release ${{ steps.semver.outputs.v_patch }}
