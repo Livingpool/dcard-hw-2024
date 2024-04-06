@@ -32,15 +32,10 @@ jobs:
         run: go get .
 
       - name: Test with the Go CLI
-        run: go test -json > TestResults.json
-
-      - name: Upload Go Test TestResults
-        uses: actions/upload-artifact@v4
-        with:
-          name: TestResults
-          path: TestResults.json
+        uses: go test -v ./...
 
   setup-build-deploy:
+    needs: test # Ensure the test is completed before this job starts
     name: Setup, Build, and Deploy to GKE
     runs-on: ubuntu-latest
 
