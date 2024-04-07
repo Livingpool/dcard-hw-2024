@@ -115,11 +115,7 @@ jobs:
         with:
           version: ${{ steps.previoustag.outputs.tag }}
 
-      - name: Create release
-        id: create_release_id
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.semver.outputs.v_patch }}
-          release_name: Release ${{ steps.semver.outputs.v_patch }}
