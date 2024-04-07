@@ -2,7 +2,7 @@
 [![Docker Build, Unit Test, and Deploy to GKE](https://github.com/Livingpool/dcard-hw-2024/actions/workflows/build-test-deploy.yaml/badge.svg)](https://github.com/Livingpool/dcard-hw-2024/actions/workflows/build-test-deploy.yaml) \
 This is the 2024 Backend Intern Assignment for Dcard🔥.\
 🔗[Assignment Document Link](https://drive.google.com/file/d/1dnDiBDen7FrzOAJdKZMDJg479IC77_zT/view) \
-🔗[API Specification](https://api.postman.com/collections/28789780-b7450221-75c2-4031-91f2-460f5d1ab864?access_key=PMAT-01HTV5SMBN25EDBQGF7HFDVRB7)
+🔗[API Specification](https://documenter.getpostman.com/view/28789780/2sA35Mxdfq)
 
 ### Requirements 
 - [x] Admin API for creating advertisements
