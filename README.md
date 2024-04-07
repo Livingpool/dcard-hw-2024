@@ -22,6 +22,9 @@ This is the 2024 Backend Intern Assignment for Dcard🔥.\
 - #### Choosing Go Gin
   - Gin is a lightweight, easy-to-use web framework and I am familiar with it. But starting from go 1.22,
     advanced routing is provided in the standard net/http package, so I may try that for my next project.
+- #### Choosing MongoDB
+  - As the requirements dictate only one table, i.e., advertisement, I chose MongoDB (NoSQL) as the database for simplicity.
+  - Filtering, pagination & sorting by endAt field (ASC) are achieved using mongo-driver package.
 - #### Handling high load for Public API
   - This is the main challenge. Handling high load ususally involves caching and/or load balancing.
 - #### Cache strategy
